@@ -97,7 +97,11 @@ install() {
   mkdir -p "$BACKUPS"
   local stamp
   stamp="$(date +%Y%m%d-%H%M%S)"
-  [ -d "$APP" ] && mv "$APP" "$BACKUPS/$APP_NAME $stamp.app"
+  if [ -d "$APP" ]; then
+    # Keep one rollback: drop older AW Code backups before saving the current one.
+    find "$BACKUPS" -maxdepth 1 -name "$APP_NAME *.app" -exec rm -rf {} +
+    mv "$APP" "$BACKUPS/$APP_NAME $stamp.app"
+  fi
   [ -d "$LEGACY_APP" ] && mv "$LEGACY_APP" "$BACKUPS/T3 Code (Beta) $stamp.app"
   ditto "$BUILT" "$APP"
   open "$APP"
