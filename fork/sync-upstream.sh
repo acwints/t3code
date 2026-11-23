@@ -9,8 +9,10 @@
 set -euo pipefail
 
 BRANCH="${FORK_BRANCH:-project-background}"
-APP_NAME="T3 Code (Beta)"
+APP_NAME="AW Code"
 APP="/Applications/$APP_NAME.app"
+# The upstream install this fork replaced; retired on first install.
+LEGACY_APP="/Applications/T3 Code (Beta).app"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/release-fork"
 BUILT="$OUT/mac-arm64/$APP_NAME.app"
@@ -60,7 +62,9 @@ build() {
     # Without Rust, reuse the installed app's resource monitor; it rarely changes upstream.
     local dir="native/resource-monitor/target/aarch64-apple-darwin/release"
     mkdir -p "$dir"
-    cp "$APP/Contents/Resources/resource-monitor/t3-resource-monitor" "$dir/"
+    local installed="$APP"
+    [ -d "$installed" ] || installed="$LEGACY_APP"
+    cp "$installed/Contents/Resources/resource-monitor/t3-resource-monitor" "$dir/"
     reuse=1
   fi
   rm -rf "$OUT"
@@ -78,9 +82,9 @@ build() {
   echo "Built $version at $BUILT. Run: fork/sync-upstream.sh install"
 }
 
-# pgrep patterns are regexes, and the parentheses in the app name would not match literally.
+# pgrep patterns are regexes, and the parentheses in the legacy app name would not match literally.
 app_running() {
-  ps -axo comm= | grep -Fqx "$APP/Contents/MacOS/$APP_NAME"
+  ps -axo comm= | grep -Fqx -e "$APP/Contents/MacOS/$APP_NAME" -e "$LEGACY_APP/Contents/MacOS/T3 Code (Beta)"
 }
 
 install() {
@@ -90,9 +94,10 @@ install() {
     while app_running; do sleep 2; done
   fi
   mkdir -p "$BACKUPS"
-  if [ -d "$APP" ]; then
-    mv "$APP" "$BACKUPS/$APP_NAME $(date +%Y%m%d-%H%M%S).app"
-  fi
+  local stamp
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  [ -d "$APP" ] && mv "$APP" "$BACKUPS/$APP_NAME $stamp.app"
+  [ -d "$LEGACY_APP" ] && mv "$LEGACY_APP" "$BACKUPS/T3 Code (Beta) $stamp.app"
   ditto "$BUILT" "$APP"
   open "$APP"
   echo "Installed. Previous app saved in $BACKUPS."
