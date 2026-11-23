@@ -78,11 +78,16 @@ build() {
   echo "Built $version at $BUILT. Run: fork/sync-upstream.sh install"
 }
 
+# pgrep patterns are regexes, and the parentheses in the app name would not match literally.
+app_running() {
+  ps -axo comm= | grep -Fqx "$APP/Contents/MacOS/$APP_NAME"
+}
+
 install() {
   [ -d "$BUILT" ] || { echo "No build at $BUILT; run build first." >&2; exit 1; }
-  if pgrep -x "$APP_NAME" >/dev/null; then
+  if app_running; then
     echo "Waiting for $APP_NAME to quit..."
-    while pgrep -x "$APP_NAME" >/dev/null; do sleep 2; done
+    while app_running; do sleep 2; done
   fi
   mkdir -p "$BACKUPS"
   if [ -d "$APP" ]; then
