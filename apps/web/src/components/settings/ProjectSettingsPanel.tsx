@@ -53,6 +53,7 @@ import {
   ProjectFaviconPickerDialog,
 } from "./ProjectFaviconPickerDialog";
 import { ProjectActionsSettings } from "./ProjectActionsSettings";
+import { ProjectBackgroundRow } from "./ProjectBackgroundRow";
 import { ProjectDefaultsSettings } from "./ProjectDefaultsSettings";
 import {
   defaultProjectIcon,
@@ -641,6 +642,7 @@ function ProjectDetail({
               </div>
             }
           />
+          <ProjectBackgroundRow disabled={!canEditGroup} />
           {canOrganize ? (
             <>
               <SettingsRow

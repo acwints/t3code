@@ -122,6 +122,10 @@ vi.mock(import("./ProjectDefaultsSettings"), async (original) => ({
   ...(await original()),
   ProjectDefaultsSettings: (() => null) as never,
 }));
+vi.mock(import("./ProjectBackgroundRow"), async (original) => ({
+  ...(await original()),
+  ProjectBackgroundRow: (() => null) as never,
+}));
 vi.mock(import("./ProjectActionsSettings"), async (original) => ({
   ...(await original()),
   ProjectActionsSettings: (() => null) as never,

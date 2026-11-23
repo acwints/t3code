@@ -35,7 +35,7 @@ import {
   ProviderOptionSelections,
 } from "./model.ts";
 import { ModelSelection } from "./modelSelection.ts";
-import { ProjectScript, type ProjectMutation } from "./project.ts";
+import { ProjectIconColor, ProjectScript, type ProjectMutation } from "./project.ts";
 import { DEFAULT_RUNTIME_MODE, RuntimeMode } from "./providerPolicy.ts";
 import { BrowserProfile, BrowserProfileId, DEFAULT_BROWSER_PROFILE_ID } from "./browserProfile.ts";
 import {
@@ -1198,6 +1198,7 @@ export const PROJECT_SCOPED_SERVER_SETTING_KEYS = [
   "continueThreadsAfterServerUpdate",
   "responseStreamingMode",
   "speechProjectCustomWords",
+  "projectBackgroundColor",
 ] as const;
 export type ProjectScopedServerSettingKey = (typeof PROJECT_SCOPED_SERVER_SETTING_KEYS)[number];
 
@@ -1236,6 +1237,7 @@ export const ProjectSettingsOverrides = Schema.Struct({
   continueThreadsAfterServerUpdate: Schema.optionalKey(Schema.Boolean),
   responseStreamingMode: Schema.optionalKey(ResponseStreamingMode),
   speechProjectCustomWords: Schema.optionalKey(SpeechCustomWords),
+  projectBackgroundColor: Schema.optionalKey(Schema.NullOr(ProjectIconColor)),
   providerInstances: Schema.optionalKey(
     Schema.Record(ProviderInstanceId, ProjectProviderInstanceOverride),
   ),
@@ -1426,6 +1428,9 @@ export const ServerSettings = Schema.Struct({
   ),
   projectAutoPullOverrides: Schema.Record(ProjectId, Schema.Boolean).pipe(
     Schema.withDecodingDefault(Effect.succeed({})),
+  ),
+  projectBackgroundColor: Schema.NullOr(ProjectIconColor).pipe(
+    Schema.withDecodingDefault(Effect.succeed(null)),
   ),
   defaultModelSelection: Schema.NullOr(ModelSelection).pipe(
     Schema.withDecodingDefault(Effect.succeed(null)),
@@ -1884,6 +1889,7 @@ export const ServerSettingsPatch = Schema.Struct({
   projectAutoPullOverrides: Schema.optionalKey(
     Schema.Record(ProjectId, Schema.NullOr(Schema.Boolean)),
   ),
+  projectBackgroundColor: Schema.optionalKey(Schema.NullOr(ProjectIconColor)),
   defaultModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),
   defaultRuntimeMode: Schema.optionalKey(RuntimeMode),
   fallbackModelSelection: Schema.optionalKey(Schema.NullOr(ModelSelection)),

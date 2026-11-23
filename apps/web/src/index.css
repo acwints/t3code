@@ -1229,6 +1229,15 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   }
 }
 
+/* Dark canvases are near black, so a project background tint needs more colour to show. */
+:root {
+  --project-background-tint: 10%;
+
+  @variant dark {
+    --project-background-tint: 22%;
+  }
+}
+
 /* Keep both sidebar implementations (default and legacy) on the same quiet
    zinc hierarchy: zinc-50 navigation, zinc-25 hover, and white selected/raised
    surfaces. */

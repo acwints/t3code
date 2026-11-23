@@ -55,7 +55,7 @@ import { RightPanelSurfaceContent } from "./chat/RightPanelSurfaceContent";
 import { usePendingThreadRequests } from "./chat/usePendingThreadRequests";
 import { isScratchProject } from "@t3tools/client-runtime/state/projects";
 import { visibleThreadPullRequests } from "@t3tools/shared/threadPullRequests";
-import type { UsageLimitSourceSnapshots } from "@t3tools/contracts";
+import type { ProjectIconColor, UsageLimitSourceSnapshots } from "@t3tools/contracts";
 import { feedbackBannerItem } from "./chat/ComposerFeedback";
 import { freshSessionBannerItem } from "./chat/ComposerFreshSession";
 import { armFreshSession, disarmFreshSession, useFreshSessionArmed } from "./chat/freshSessionArms";
@@ -131,6 +131,7 @@ import { resolveThreadReferenceCopyTarget } from "@t3tools/client-runtime/thread
 import { resolveTerminalSessionLabel } from "@t3tools/shared/terminalLabelsCopy";
 import { useAtomValue } from "@effect/atom-react";
 import {
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
   type SetStateAction,
   use,
@@ -3390,10 +3391,12 @@ export default function ChatView(props: ChatViewProps) {
     addFolders: addDroppedFoldersToComposer,
   });
 
+  const projectBackgroundColor = activeProjectSettings.settings.projectBackgroundColor;
   const content = (
     <div
       ref={setWorkspaceLayoutElement}
       className="relative flex min-h-0 min-w-0 flex-1 overflow-hidden bg-background"
+      style={projectBackgroundStyle(projectBackgroundColor)}
     >
       {embedded ? null : (
         <DeviceSetupDialogHost
@@ -4140,9 +4143,26 @@ export default function ChatView(props: ChatViewProps) {
       cwd={activeWorkspaceRoot}
       checkpoints={serverProjection?.checkpoints}
     >
-      {content}
+      {projectBackgroundColor === null ? (
+        content
+      ) : (
+        // A declaration cannot read its own inherited value, so capture the base here.
+        <div
+          className="contents"
+          style={{ "--project-base-background": "var(--background)" } as CSSProperties}
+        >
+          {content}
+        </div>
+      )}
     </FileMetadataThreadProvider>
   );
+}
+
+function projectBackgroundStyle(color: ProjectIconColor | null): CSSProperties | undefined {
+  if (color === null) return undefined;
+  return {
+    "--background": `color-mix(in oklab, var(--project-base-background), var(--color-${color}-500) var(--project-background-tint))`,
+  } as CSSProperties;
 }
 
 // Chromium on Linux pastes PRIMARY into the focused editable unless the middle mouseup is cancelled.
