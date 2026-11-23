@@ -83,8 +83,9 @@ build() {
 }
 
 # pgrep patterns are regexes, and the parentheses in the legacy app name would not match literally.
+# No grep -q: exiting early sends ps SIGPIPE, and pipefail would then report "not running".
 app_running() {
-  ps -axo comm= | grep -Fqx -e "$APP/Contents/MacOS/$APP_NAME" -e "$LEGACY_APP/Contents/MacOS/T3 Code (Beta)"
+  ps -axo comm= | grep -Fx -e "$APP/Contents/MacOS/$APP_NAME" -e "$LEGACY_APP/Contents/MacOS/T3 Code (Beta)" >/dev/null
 }
 
 install() {
