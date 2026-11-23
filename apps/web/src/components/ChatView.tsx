@@ -55,7 +55,8 @@ import { RightPanelSurfaceContent } from "./chat/RightPanelSurfaceContent";
 import { usePendingThreadRequests } from "./chat/usePendingThreadRequests";
 import { isScratchProject } from "@t3tools/client-runtime/state/projects";
 import { visibleThreadPullRequests } from "@t3tools/shared/threadPullRequests";
-import type { ProjectIconColor, UsageLimitSourceSnapshots } from "@t3tools/contracts";
+import type { UsageLimitSourceSnapshots } from "@t3tools/contracts";
+import { projectBackgroundStyle } from "../projectBackground";
 import { feedbackBannerItem } from "./chat/ComposerFeedback";
 import { freshSessionBannerItem } from "./chat/ComposerFreshSession";
 import { armFreshSession, disarmFreshSession, useFreshSessionArmed } from "./chat/freshSessionArms";
@@ -4156,13 +4157,6 @@ export default function ChatView(props: ChatViewProps) {
       )}
     </FileMetadataThreadProvider>
   );
-}
-
-function projectBackgroundStyle(color: ProjectIconColor | null): CSSProperties | undefined {
-  if (color === null) return undefined;
-  return {
-    "--background": `color-mix(in oklab, var(--project-base-background), var(--color-${color}-500) var(--project-background-tint))`,
-  } as CSSProperties;
 }
 
 // Chromium on Linux pastes PRIMARY into the focused editable unless the middle mouseup is cancelled.
